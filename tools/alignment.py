@@ -172,3 +172,109 @@ print("Fronthang2:  "+ str(fronthang2))
 print("Backhang2:  "+ str(backhang2))
 print("Longest Skip Stretch 1:  "+ str(longestSkipStretch1))
 print("Longest Skip Stretch 2:  "+ str(longestSkipStretch2))
+
+
+skips1 = 0
+skips2 = 0
+longestSkipstretch1= 0
+longestSkipstretch2 = 0
+mismatchArray = np.empty(16)
+mismatchArray = np.resize(mismatchArray, [4,4])
+
+skipStretch1=0
+longestSkipStretch1=0
+skipStretch2=0
+longestSkipStretch2=0
+
+while scoreMatrix[position[0], position[1]] != 0:
+    options = np.array([scoreMatrix[position[0]-1, position[1]]])
+    options = np.append(options, scoreMatrix[position[0], position[1]-1])
+    options = np.append(options, scoreMatrix[position[0]-1, position[1]-1])
+    
+    ##Which squares could it have come from
+    legal = [False, False, False]
+    if ((options[2]==scoreMatrix[position[0], position[1]]-ms)or(options[2]==scoreMatrix[position[0], position[1]]-mp)):
+        legal[2]=True
+    if (options[1] == scoreMatrix[position[0],position[1]]-gp):
+        legal[1]=True
+    if (options[0] == scoreMatrix[position[0],position[1]]-gp):
+        legal[0]=True
+    
+    #Which is best
+    choices = np.empty(3)
+    for x in range(2):
+        if legal[x]:
+            choices[x]=options[x]
+        else:
+            choices[x]=0
+    choice = np.argmax(choices)
+
+    ##Record added base
+    if(choice==0):
+        top = data1[position[0]-1] + top
+        bottom = "-" + bottom
+        position = [position[0]-1, position[1]]
+        skips2 = skips2+1
+        skipStretch2 = skipStretch2+1
+    if(choice==1):
+        bottom = data2[position[1]-1] + bottom
+        top = "-" + top
+        position = [position[0], position[1]-1]
+        skips1 = skips1 + 1
+        skipStretch1 = skipStretch1+1
+    if(choice==2):
+        top = data1[position[0]-1] + top
+        bottom = data2[position[1]-1] + bottom
+        position = [position[0]-1, position[1]-1]
+        skipStretch1 = 0
+        skipStretch2 = 0
+        if(data1[position[0]-1]=="A"): k = 0
+        if(data1[position[0]-1]=="C"): k = 1
+        if(data1[position[0]-1]=="G"): k = 2
+        if(data1[position[0]-1]=="T"): k = 3
+        if(data2[position[1]-1]=="A"): l = 0
+        if(data2[position[1]-1]=="C"): l = 1
+        if(data2[position[1]-1]=="G"): l = 2
+        if(data2[position[1]-1]=="T"): l = 3
+        mismatchArray[k,l] = mismatchArray[k,l]+1
+
+
+    if(skipStretch1>longestSkipStretch1):
+        longestSkipStretch1=skipStretch1
+    if(skipStretch2>longestSkipStretch2):
+        longestSkipStretch2=skipStretch2
+    """
+    print("SCORE: " + str(scoreMatrix[position[0],position[1]]))
+    print("Match: " + str(scoreMatrix[position[0], position[1]]-ms))
+    print("MISMATCH: "+str(scoreMatrix[position[0], position[1]]-mp))
+    print("GAP: " + str(scoreMatrix[position[0], position[1]]-gp))
+    print("position = " + str(position))
+    print(legal)
+    print(choices)
+    print(choice)
+    print("options=" + str(options))
+    """
+    
+overhang1 = len(data1)-(len(top)-skips1)
+overhang2 = len(data2)-(len(bottom)-skips2)
+fronthang1 = position[0] 
+fronthang2 = position[1]
+backhang1 = len(data1)-start[0]
+backhang2 = len(data2)-start[1]
+    
+
+print("TOP:     " + top)
+print("BOTTOM:  " + bottom)
+print("END: "+ str(position))
+print("SKIP1:  "+ str(skips1))
+print("SKIP2:  "+ str(skips2))
+print("Overhang1: "+ str(overhang1))
+print("Fronthang1:  "+ str(fronthang1))
+print("Backhang1:  "+ str(backhang1))
+print("Overhang2: "+ str(overhang2))
+print("Fronthang2:  "+ str(fronthang2))
+print("Backhang2:  "+ str(backhang2))
+print("Longest Skip Stretch 1:  "+ str(longestSkipStretch1))
+print("Longest Skip Stretch 2:  "+ str(longestSkipStretch2))
+
+print(mismatchArray)
