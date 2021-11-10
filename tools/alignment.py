@@ -32,16 +32,16 @@ scoreMatrix = np.zeros((len1+1, len2+1))
 
 for i in range(1, len1+1):
     for j in range(1, len2+1):
-        posibilities = np.array([scoreMatrix[i, j-1]+gp])
-        posibilities = np.append(posibilities, [scoreMatrix[i-1, j]+gp])
+        pos = np.array([scoreMatrix[i, j-1]+gp])
+        pos = np.append(pos, [scoreMatrix[i-1, j]+gp])
         if data1[i-1] == data2[j-1]:
-            posibilities = np.append(
-            posibilities, [scoreMatrix[i-1][j-1]+ms])
+            pos = np.append(
+            pos, [scoreMatrix[i-1][j-1]+ms])
         else:
-            posibilities = np.append(
-            posibilities, [scoreMatrix[i-1][j-1]+mp])
-        posibilities = np.append(posibilities, [0])
-        scoreMatrix[i, j] = posibilities.max()
+            pos = np.append(
+            pos, [scoreMatrix[i-1][j-1]+mp])
+        pos = np.append(pos, [0])
+        scoreMatrix[i, j] = pos.max()
 
 print(scoreMatrix)
 plt.imshow(scoreMatrix, cmap = "Reds")
