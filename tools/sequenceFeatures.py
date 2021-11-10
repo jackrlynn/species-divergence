@@ -59,15 +59,3 @@ def nucleoFreq(sequence):
             count[3] += 1
     print(count)
     return count
-
-
-def main():
-    sequence = ""
-    k1Complexity(sequence)
-    k2Complexity(sequence)
-    dinucleoFreq(sequence)
-    nucleoFreq(sequence)
-
-
-if __name__ == '__main__':
-    main()

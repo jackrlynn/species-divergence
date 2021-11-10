@@ -16,7 +16,7 @@ def getSpeciesDivergence(species_1, species_2):
     diverg_mat = pd.read_csv("data/species_diverg.csv")
     return diverg_mat[sci_to_abbr[species_1][0]][sci_to_abbr[species_2][1]]
 
-def parseFasta(file_name, loc="./data"):
+def parseFasta(file_name, loc="./data/"):
 
     # Read in data file
     f = open(loc+file_name, 'r')
@@ -66,3 +66,17 @@ def parseFasta(file_name, loc="./data"):
         n = open(name, "w")
         n.write(cleanSeq)
         n.close()
+
+def readSequenceFile(file_name, loc='./data/'):
+
+    # Open the file
+    f = open(loc+file_name, "r")
+
+    # Get the sequence
+    seq = f.read()
+
+    # Close the file
+    f.close()
+
+    # Return sequence
+    return seq

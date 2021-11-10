@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def smithWaterman(seq1, seq2, ms, mp, gp):
+def smithWaterman(seq1, seq2, ms, mp, gp, include_matrix=False, include_hang=False, include_mismatch=False, include_skip=False):
     len1 = len(seq1)
     len2 = len(seq2)
 
@@ -26,6 +26,18 @@ def smithWaterman(seq1, seq2, ms, mp, gp):
     top = ""
     bottom = ""
     position = np.array(start)
+
+    skips1 = 0
+    skips2 = 0
+    longestSkipstretch1 = 0
+    longestSkipstretch2 = 0
+    mismatchArray = np.empty(16)
+    mismatchArray = np.resize(mismatchArray, [4, 4])
+
+    skipStretch1 = 0
+    longestSkipStretch1 = 0
+    skipStretch2 = 0
+    longestSkipStretch2 = 0
 
     while matrix[position[0], position[1]] != 0:
         options = np.array([matrix[position[0] - 1, position[1]]])
@@ -56,16 +68,58 @@ def smithWaterman(seq1, seq2, ms, mp, gp):
             top = seq1[position[0] - 1] + top
             bottom = "-" + bottom
             position = [position[0] - 1, position[1]]
+            skips2 = skips2 + 1
+            skipStretch2 = skipStretch2 + 1
         if (choice == 1):
             bottom = seq2[position[1] - 1] + bottom
             top = "-" + top
             position = [position[0], position[1] - 1]
+            skips1 = skips1 + 1
+            skipStretch1 = skipStretch1 + 1
         if (choice == 2):
             top = seq1[position[0] - 1] + top
             bottom = seq2[position[1] - 1] + bottom
             position = [position[0] - 1, position[1] - 1]
+            skipStretch1 = 0
+            skipStretch2 = 0
+            if (seq1[position[0] - 1] == "A"): k = 0
+            if (seq1[position[0] - 1] == "C"): k = 1
+            if (seq1[position[0] - 1] == "G"): k = 2
+            if (seq1[position[0] - 1] == "T"): k = 3
+            if (seq2[position[1] - 1] == "A"): l = 0
+            if (seq2[position[1] - 1] == "C"): l = 1
+            if (seq2[position[1] - 1] == "G"): l = 2
+            if (seq2[position[1] - 1] == "T"): l = 3
+            mismatchArray[k, l] = mismatchArray[k, l] + 1
 
-    return [top, bottom]
+        if (skipStretch1 > longestSkipStretch1):
+            longestSkipStretch1 = skipStretch1
+        if (skipStretch2 > longestSkipStretch2):
+            longestSkipStretch2 = skipStretch2
+
+    return_arr = [top, bottom]
+
+    if (include_matrix):
+        return_arr.append(matrix)
+
+    if (include_hang):
+        overhang1 = len(seq1) - (len(top) - skips1)
+        overhang2 = len(seq2) - (len(bottom) - skips2)
+        fronthang1 = position[0]
+        fronthang2 = position[1]
+        backhang1 = len(seq1) - start[0]
+        backhang2 = len(seq2) - start[1]
+        hang = [overhang1, overhang2, fronthang1, fronthang2, backhang1, backhang2]
+        return_arr.append(hang)
+
+    if (include_mismatch):
+        return_arr.append(mismatchArray)
+
+    if (include_skip):
+        skip = [longestSkipStretch1, longestSkipStretch2]
+        return_arr.append(skip)
+
+    return return_arr
 
 def addFrontToAlignment(seq, align, index):
     align_save = align

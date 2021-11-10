@@ -29,7 +29,7 @@ def dehash(h, kmer_len):
 
     return seq
 
-def createHashList(seq, k, should_sort):
+def createHashList(seq, k, should_sort=True):
     hash_lst = []
     for i in range(k-1, len(seq)):
         hash_lst.append(hash(seq[i-k+1:i+1]))
@@ -78,7 +78,7 @@ def getSmilarityExcludeAlignment(seq1, seq2, k, align1, align2):
             kmer1 = lst1[i]
             kmer2 = lst2[j]
             if (kmer1 == kmer2):
-                if (not isAligned(align1, align2, i+k-1, j+k-1)):
+                if (not isAligned(align1, align2, i, j)):
                     ct += 1
 
     return ct
