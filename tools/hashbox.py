@@ -53,6 +53,8 @@ def isAligned(align1, align2, pos1, pos2):
     align_pos1 = convertPosToAlignedPos(pos1, align1)
     align_pos2 = convertPosToAlignedPos(pos2, align2)
     if (align_pos1 == align_pos2):
+        print(f'{pos1}, {pos2}')
+        print(f'{align_pos1}, {align_pos2}')
         return True
     else:
         return False
@@ -80,5 +82,4 @@ def getSmilarityExcludeAlignment(seq1, seq2, k, align1, align2):
             if (kmer1 == kmer2):
                 if (not isAligned(align1, align2, i, j)):
                     ct += 1
-
     return ct

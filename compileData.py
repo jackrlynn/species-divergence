@@ -2,12 +2,11 @@ import dataNavigation as nav
 import tools.hashbox as hb
 import tools.sequenceFeatures as sf
 import tools.smithWaterman as sw
-import pandas as pd
 import numpy as np
 
 def compileData(file1, file2, loc="./data/"):
-    seq1 = nav.readSequenceFile("hfe/training/Artibeus jamaicensis.txt")
-    seq2 = nav.readSequenceFile("hfe/training/Trichosurus vulpecula.txt")
+    seq1 = nav.readSequenceFile(file1, loc)
+    seq2 = nav.readSequenceFile(file2, loc)
 
     print("Landmark #1: DATA LOADED")
 
@@ -20,9 +19,9 @@ def compileData(file1, file2, loc="./data/"):
 
     print("LANDMARK #2: ALIGNMENT COMPLETE")
 
-    # k-mers 5-15
+    # k-mers 11-15
     kmers = []
-    for k in range(5, 15):
+    for k in range(11, 16):
         kmers.append(hb.getSimilarity(seq1, seq2, k))
         kmers.append(hb.getSmilarityExcludeAlignment(seq1, seq2, k, align1, align2))
         print(f'LANDMARK #3: {k}-MER SIMILARITY COMPLETE')

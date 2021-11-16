@@ -25,7 +25,6 @@ def k2Complexity(sequence):
         else:
             K2 += (CV[i] / window) * (math.log2(CV[i] / window))
 
-    print(-K2)
     return -K2
 
 
@@ -40,7 +39,6 @@ def dinucleoFreq(sequence):
             for key in diNucDict:
                 if key == diNuc:
                     diNucDict[key] += 1
-    print(diNucDict)
     return 0
 
 
@@ -57,5 +55,4 @@ def nucleoFreq(sequence):
             count[2] += 1
         elif currentNuc == 'G':
             count[3] += 1
-    print(count)
     return count
