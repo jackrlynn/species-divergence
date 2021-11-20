@@ -1,8 +1,10 @@
 import compileData as cd
+import dataNavigation as dn
+
 
 def main():
-    arr = cd.compileData("Homo sapiens.txt", "Trichosurus vulpecula.txt", "./data/hfe/training/")
-    print(arr)
+    print(cd.createTable('data/hfe/tableTest'))
+
 
 if __name__ == '__main__':
     main()
