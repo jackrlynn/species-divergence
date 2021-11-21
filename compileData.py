@@ -6,24 +6,11 @@ import numpy as np
 import os
 import csv
 
+def getRow(seq1, seq2):
 
-def compileDataNuc(seq1):
-    # Nucleotide frequencies
-    nfreqs = []
-    nfreqs.append(sf.nucleoFreq(seq1))
-    # nfreqs.append(sf.dinucleoFreq(seq1))
-
-    # Complexity
-    complex = []
-    complex.append(sf.k1Complexity(seq1))
-    complex.append(sf.k2Complexity(seq1))
-
-    return flatten([nfreqs, complex])
-
-
-def compileDataAlign(seq1, seq2):
     print("Landmark #1: DATA LOADED")
-    align1, align2, matrix, hang, mismatch, skip = sw.smithWaterman(seq1, seq2, 2, -1, -2, True, True, True, True)
+
+    align1, align2, hang, mismatch, skip = sw.smithWaterman(seq1, seq2, 2, -1, -2, False, True, True, True)
     align1, align2 = sw.fixFront(seq1, seq2, align1, align2)
     align1, align2 = sw.fixBack(seq1, seq2, align1, align2)
 
@@ -37,14 +24,25 @@ def compileDataAlign(seq1, seq2):
     for k in range(11, 16):
         kmers.append(hb.getSimilarity(seq1, seq2, k))
         kmers.append(hb.getSimilarityExcludeAlignment(seq1, seq2, k, align1, align2))
-        print(f'LANDMARK #3: {k}-MER SIMILARITY COMPLETE')
+    print(f'LANDMARK #3: k-MER SIMILARITY COMPLETE')
 
-    print(hang)
-    print(mismatch)
-    print(skip)
-    print(kmers)
-    return flatten([hang, mismatch, skip, kmers])
+    # Nucleotide frequencies
+    nfreqs = []
+    nfreqs.append(sf.nucleoFreq(seq1))
+    nfreqs.append(sf.nucleoFreq(seq2))
+    #nfreqs.append(sf.dinucleoFreq(seq1))
+    #nfreqs.append(sf.dinucleoFreq(seq2))
+    print("LANDMARK #4: NUCLEOTIDE FREQUENCIES COMPLETE")
 
+    # Complexity
+    complex = []
+    complex.append(sf.k1Complexity(seq1))
+    complex.append(sf.k1Complexity(seq2))
+    complex.append(sf.k2Complexity(seq1))
+    complex.append(sf.k2Complexity(seq2))
+    print("LANDMARK #5: COMPLEXITY COMPLETE")
+
+    return flatten([hang, mismatch, skip, kmers, nfreqs, complex])
 
 # SOURCE: https://stackabuse.com/python-how-to-flatten-list-of-lists/
 def flatten(arr):
@@ -64,49 +62,63 @@ def flatten(arr):
 
 
 def createTable(directory):
-    genes = []
-    table = []
-    names = []
-    holdRow = []
-    i = 0
-    os.chdir(directory)
 
-    table.append(['Species Name', 'C freq', 'A freq', 'T freq', 'G freq', 'K1 Complexity', 'K2 Complexity'])
+    names = [] # Holds the names of sequences
+    seqs = [] # Holds the sequence of a corresponding index in names list
+    table = [] # Holds all the data that will be written out to the CSV
 
-    cat = ['Overhang1: ', 'Overhang2: ', 'Fronthang1: ', 'Fronthang2: ', 'Backhang1: ', 'Backhang2: ',
-           'AA Match: ', 'AC Mismatch: ', 'AG Mismatch: ', 'AT Mismatch: ', 'CA Mismatch: ', 'CC Match: ',
-           'CG Mismatch: ',
-           'CT Mismatch: ', 'GA Mismatch: ', 'GC Mismatch: ', 'GG Match: ', 'GT Mismatch: ', 'TA Mismatch: ',
-           'TC Mismatch: ', 'TG Mismatch: ', 'TT Match: ', 'Long Skip1: ', 'Long Skip2: ', '11-Mer WA: ',
-           '11-Mer WOA: ',
-           '12-Mer WA: ', '12-Mer WOA: ', '13-Mer WA: ', '13-Mer WOA: ', '14-Mer WA: ', '14-Mer WOA: ',
-           '15-Mer WA: ', '15-Mer WOA: ']
+    # Get all data from the files in the given directory
+    for file in os.listdir(directory):
 
-    # iterate through all file
-    for file in os.listdir():
-        f = open(file, 'r')
+        # Open and read in file contents
+        f = open(directory + file, 'r')
         contents = f.read()
+        f.close()
+
+        # Add name to names list
         names.append(file.replace('.txt', ''))
-        genes.append(contents)
 
-    for name in names:
-        vs = 'Current/' + name
-        for currentCat in cat:
-            table[0].append(currentCat + vs)
+        # Add sequence to seqs list
+        seqs.append(contents)
 
-    for gene1 in genes:
-        holdNuc = compileDataNuc(gene1)
-        print(holdRow)
-        for gene2 in genes:
-            print(gene1)
-            print(gene2)
-            holdRow.append(compileDataAlign(gene1, gene2))
-            print(holdRow)
-        table.append(flatten([names[i], holdNuc, holdRow]))
-        print(table)
-        holdRow = []
-        i += 1
+    header = ["species_1", "species_2",
+              "overhang_1", "overhang_2",
+              "fronthang_1", "fronthang_2",
+              "backhang_1", "backhang_2",
+              "AA_mismatch", "AC_mismatch", "AG_mismatch", "AT_mismatch",
+              "CA_mismatch", "CC_mismatch", "CG_mismatch", "CT_mismatch",
+              "GA_mismatch", "GC_mismatch", "GG_mismatch", "GT_mismatch",
+              "TA_mismatch", "TC_mismatch", "TG_mismatch", "TT_mismatch",
+              "long_skip_1", "long_skip_2",
+              "11_mer", "11_no_align",
+              "12_mer", "12_no_align",
+              "13_mer", "13_no_align",
+              "14_mer", "14_no_align",
+              "15_mer", "15_no_align",
+              "A_freq_1", "C_freq_1", "G_freq_1", "T_freq_1",
+              "A_freq_2", "C_freq_2", "G_freq_2", "T_freq_2",
+              #"AA_freq_1", "AC_freq_1", "AG_freq_1", "AT_freq_1",
+              #"CA_freq_1", "CC_freq_1", "CG_freq_1", "CT_freq_1",
+              #"GA_freq_1", "GC_freq_1", "GG_freq_1", "GT_freq_1",
+              #"TA_freq_1", "TC_freq_1", "TG_freq_1", "TT_freq_1",
+              #"AA_freq_2", "AC_freq_2", "AG_freq_2", "AT_freq_2",
+              #"CA_freq_2", "CC_freq_2", "CG_freq_2", "CT_freq_2",
+              #"GA_freq_2", "GC_freq_2", "GG_freq_2", "GT_freq_2",
+              #"TA_freq_2", "TC_freq_2", "TG_freq_2", "TT_freq_2",
+              "k1_1", "k1_2",
+              "k2_1", "k2_2",
+              "divergence"]
+    table.append(header)
 
+    # Do sequence comparisons for all genes
+    for i in range(len(names)): # First gene for comparison
+        for j in range(i, len(names)): # Second gene for comparison; formulation skips repeats
+            to_add = [names[i], names[j]]
+            to_add.append(getRow(seqs[i], seqs[j])) # Do sequence comparison
+            to_add.append(nav.getSpeciesDivergence(names[i], names[j])) # Get time of divergence
+            table.append(flatten(to_add)) # Add sequence to table
+
+    # Write out data to CSV
     with open('out.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(table)

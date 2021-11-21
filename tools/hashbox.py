@@ -77,6 +77,5 @@ def getSimilarityExcludeAlignment(seq1, seq2, k, align1, align2):
             kmer2 = lst2[j]
             if (kmer1 == kmer2):
                 if (not isAligned(align1, align2, i, j)):
-                    print(str(i)+": "+dehash(kmer1, k)+", "+str(j)+": "+dehash(kmer2, k))
                     ct += 1
     return ct

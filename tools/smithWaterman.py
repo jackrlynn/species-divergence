@@ -82,6 +82,10 @@ def smithWaterman(seq1, seq2, ms, mp, gp, include_matrix=False, include_hang=Fal
             position = [position[0] - 1, position[1] - 1]
             skipStretch1 = 0
             skipStretch2 = 0
+
+            # Needed fix for fringe cases
+            k = -1
+            l = -1
             if (seq1[position[0] - 1] == "A"): k = 0
             if (seq1[position[0] - 1] == "C"): k = 1
             if (seq1[position[0] - 1] == "G"): k = 2
@@ -90,7 +94,8 @@ def smithWaterman(seq1, seq2, ms, mp, gp, include_matrix=False, include_hang=Fal
             if (seq2[position[1] - 1] == "C"): l = 1
             if (seq2[position[1] - 1] == "G"): l = 2
             if (seq2[position[1] - 1] == "T"): l = 3
-            mismatchArray[k, l] = mismatchArray[k, l] + 1
+            if (k > -1 and l > -1):
+                mismatchArray[k, l] = mismatchArray[k, l] + 1
 
         if (skipStretch1 > longestSkipStretch1):
             longestSkipStretch1 = skipStretch1
