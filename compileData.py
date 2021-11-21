@@ -36,7 +36,7 @@ def compileDataAlign(seq1, seq2):
     kmers = []
     for k in range(11, 16):
         kmers.append(hb.getSimilarity(seq1, seq2, k))
-        kmers.append(hb.getSmilarityExcludeAlignment(seq1, seq2, k, align1, align2))
+        kmers.append(hb.getSimilarityExcludeAlignment(seq1, seq2, k, align1, align2))
         print(f'LANDMARK #3: {k}-MER SIMILARITY COMPLETE')
 
     print(hang)

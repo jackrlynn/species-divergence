@@ -53,24 +53,20 @@ def isAligned(align1, align2, pos1, pos2):
     align_pos1 = convertPosToAlignedPos(pos1, align1)
     align_pos2 = convertPosToAlignedPos(pos2, align2)
     if (align_pos1 == align_pos2):
-        print(f'{pos1}, {pos2}')
-        print(f'{align_pos1}, {align_pos2}')
         return True
     else:
         return False
 
 def convertPosToAlignedPos(pos, align):
-    new_pos = 0
+    curr_pos = 0
     i = 0
-    while (i != pos):
-        if (align[new_pos] == '-'):
-            new_pos += 1
-        else:
-            new_pos += 1
+    while (i <= pos):
+        if (not (align[curr_pos] == '-')):
             i += 1
-    return new_pos
+        curr_pos += 1
+    return curr_pos -1
 
-def getSmilarityExcludeAlignment(seq1, seq2, k, align1, align2):
+def getSimilarityExcludeAlignment(seq1, seq2, k, align1, align2):
     lst1 = createHashList(seq1, k, False)
     lst2 = createHashList(seq2, k, False)
 
@@ -81,5 +77,6 @@ def getSmilarityExcludeAlignment(seq1, seq2, k, align1, align2):
             kmer2 = lst2[j]
             if (kmer1 == kmer2):
                 if (not isAligned(align1, align2, i, j)):
+                    print(str(i)+": "+dehash(kmer1, k)+", "+str(j)+": "+dehash(kmer2, k))
                     ct += 1
     return ct
