@@ -29,8 +29,8 @@ def k2Complexity(sequence):
 
 
 def dinucleoFreq(sequence):
-    diNucDict = {"AA": 0, "AC": 0, "AT": 0, "AG": 0, "CA": 0, "CC": 0, "CT": 0, "CG": 0, "TA": 0,
-                 "TC": 0, "TT": 0, "TG": 0, "GA": 0, "GC": 0, "GT": 0, "GG": 0}
+    diNucDict = {"AA": 0, "AC": 0, "AG": 0, "AT": 0, "CA": 0, "CC": 0, "CG": 0, "CT": 0, "TA": 0,
+                 "TC": 0, "TG": 0, "TT": 0, "GA": 0, "GC": 0, "GG": 0, "GT": 0}
     diNuc = ""
 
     for i in range(0, len(sequence), 1):
@@ -39,7 +39,8 @@ def dinucleoFreq(sequence):
             for key in diNucDict:
                 if key == diNuc:
                     diNucDict[key] += 1
-    return 0
+    print(diNucDict)
+    return list(diNucDict.values())
 
 
 # Nucleotide Frequencies
