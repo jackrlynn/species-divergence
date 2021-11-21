@@ -30,8 +30,8 @@ def getRow(seq1, seq2):
     nfreqs = []
     nfreqs.append(sf.nucleoFreq(seq1))
     nfreqs.append(sf.nucleoFreq(seq2))
-    #nfreqs.append(sf.dinucleoFreq(seq1))
-    #nfreqs.append(sf.dinucleoFreq(seq2))
+    nfreqs.append(sf.dinucleoFreq(seq1))
+    nfreqs.append(sf.dinucleoFreq(seq2))
     print("LANDMARK #4: NUCLEOTIDE FREQUENCIES COMPLETE")
 
     # Complexity
@@ -97,14 +97,14 @@ def createTable(directory):
               "15_mer", "15_no_align",
               "A_freq_1", "C_freq_1", "G_freq_1", "T_freq_1",
               "A_freq_2", "C_freq_2", "G_freq_2", "T_freq_2",
-              #"AA_freq_1", "AC_freq_1", "AG_freq_1", "AT_freq_1",
-              #"CA_freq_1", "CC_freq_1", "CG_freq_1", "CT_freq_1",
-              #"GA_freq_1", "GC_freq_1", "GG_freq_1", "GT_freq_1",
-              #"TA_freq_1", "TC_freq_1", "TG_freq_1", "TT_freq_1",
-              #"AA_freq_2", "AC_freq_2", "AG_freq_2", "AT_freq_2",
-              #"CA_freq_2", "CC_freq_2", "CG_freq_2", "CT_freq_2",
-              #"GA_freq_2", "GC_freq_2", "GG_freq_2", "GT_freq_2",
-              #"TA_freq_2", "TC_freq_2", "TG_freq_2", "TT_freq_2",
+              "AA_freq_1", "AC_freq_1", "AG_freq_1", "AT_freq_1",
+              "CA_freq_1", "CC_freq_1", "CG_freq_1", "CT_freq_1",
+              "GA_freq_1", "GC_freq_1", "GG_freq_1", "GT_freq_1",
+              "TA_freq_1", "TC_freq_1", "TG_freq_1", "TT_freq_1",
+              "AA_freq_2", "AC_freq_2", "AG_freq_2", "AT_freq_2",
+              "CA_freq_2", "CC_freq_2", "CG_freq_2", "CT_freq_2",
+              "GA_freq_2", "GC_freq_2", "GG_freq_2", "GT_freq_2",
+              "TA_freq_2", "TC_freq_2", "TG_freq_2", "TT_freq_2",
               "k1_1", "k1_2",
               "k2_1", "k2_2",
               "divergence"]

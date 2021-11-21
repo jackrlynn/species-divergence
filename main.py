@@ -1,4 +1,5 @@
 import compileData as cd
+import tools.sequenceFeatures as sf
 
 
 def main():
