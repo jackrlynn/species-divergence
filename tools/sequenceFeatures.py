@@ -39,7 +39,6 @@ def dinucleoFreq(sequence):
             for key in diNucDict:
                 if key == diNuc:
                     diNucDict[key] += 1
-    print(diNucDict)
     return list(diNucDict.values())
 
 
