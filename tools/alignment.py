@@ -301,17 +301,17 @@ def readPaths(alignments):
         avgSkips = avgSkips + skipper
         if (maxSkips[0] < skipper[0]): maxSkips[0] = skipper[0]
         if (maxSkips[0] < skipper[0]): maxSkips[0] = skipper[0]
-        avgSkipsDif = math.fabs(skipper[0] - skipper[1])
+        avgSkipsDif = avgSkipsDif + math.fabs(skipper[0] - skipper[1])
         if (maxSkipsDif < (math.fabs(skipper[0] - skipper[1]))): maxSkipsDif = math.fabs(skipper[0] - skipper[1])
 
     avgAS = avgAS / noPaths
     temp = overhangAvg.copy()
     overhangAvg = np.empty(6)
     for i in range(6):
-        overhangAvg[i] = np.sum(temp[i::6])
+        overhangAvg[i] = np.sum(temp[i::6])/noPaths
 
-    for i in range(4):
-        avgSkips[i] = avgSkips[i] / noPaths
+    avgSkips = np.sum(avgSkips) / noPaths
+    maxSkips = np.sum(maxSkips)
     avgSkipsDif = avgSkipsDif / noPaths
 
     returnArray = np.array(noPaths)
@@ -363,5 +363,4 @@ data2 = "ATGGGCTCGAGGAGTAAGGCGACAGGTGATGCCACGGCCTCGACGGTGAAGGCAGAAGAAATCCGGAGCCT
 
 ali = getPaths(data1, data2)
 print(ali)
-number, maxAS, avgAS, maxSkips, minSkips, avgSkips,  = readPaths(ali)
-print(final)
+number, maxAS, avgAS, avgOHt1, avgOHf1,  avgOHb1, avgOHt3, avgOHf2,  avgOHb2, minOHt1, minOHf1, minOHb1, minOHt2, minOHf2, minOHb2, maxOHt1, maxOHf1,  maxOHb1, maxOHt3, maxOHf2,  maxOHb2, amTotalAA, amTotalAC, amTotalAG, amTotalAT, amTotalCA, amTotalCC, amTotalCG, amTotalCT,  amTotalGA, amTotalGC, amTotalGG, amTotalGT,  amTotalTA, amTotalTC, amTotalTG, amTotalTT, avgSkips, maxSkips, avgSD, maxSD  = readPaths(ali)
