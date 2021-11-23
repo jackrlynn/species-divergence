@@ -39,6 +39,10 @@ def dinucleoFreq(sequence):
             for key in diNucDict:
                 if key == diNuc:
                     diNucDict[key] += 1
+
+    for key in diNucDict:
+        diNucDict[key] = diNucDict[key] / len(sequence)
+
     return list(diNucDict.values())
 
 
@@ -55,4 +59,8 @@ def nucleoFreq(sequence):
             count[2] += 1
         elif currentNuc == 'G':
             count[3] += 1
+
+    for i in range(0, 4):
+        count[i] = count[i] / len(sequence)
+
     return count
