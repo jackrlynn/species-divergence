@@ -8,16 +8,13 @@ Original file is located at
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import math
-
-plt.rcParams.update({'font.size': 16})
-plt.rcParams['figure.figsize'] = [12, 6]
+import random
 
 """#  <font color='red'> Entry Processing </font> 
 
 
-"""
+
 
 # Takes in information
 file2 = "test.fas"
@@ -69,100 +66,102 @@ len2 = len(data2)
 print(len1)
 print(len2)
 
+"""
+
 """# Smith-Waterman Score Martix
 
 ## Matrix Processing
 """
 
-def readSmithWaterman(scoreMatrix, data1, data2, include_matrix=False, include_hang=False, include_mismatch=False, include_skip=False, include_path=False, include_max=False):
-  len1 = len(data1)
-  len2 = len(data2)
-  start = np.unravel_index(scoreMatrix.argmax(), scoreMatrix.shape)
-  top = ""
-  bottom = ""
-  position = np.array(start)
 
-  path = np.empty(2, dtype=int)
+def readSmithWaterman(scoreMatrix, data1, data2, ms=2, mp=-3, gp=-3, include_matrix=False, include_hang=False, include_mismatch=False,
+                      include_skip=False, include_path=False, include_max=False):
+    len1 = len(data1)
+    len2 = len(data2)
+    start = np.unravel_index(scoreMatrix.argmax(), scoreMatrix.shape)
+    top = ""
+    bottom = ""
+    position = np.array(start)
 
+    path = np.empty(2, dtype=int)
 
-  skips1 = 0
-  skips2 = 0
-  longestSkipstretch1= 0
-  longestSkipstretch2 = 0
-  mismatchArray = np.empty(16)
-  mismatchArray = np.resize(mismatchArray, [4,4])
+    skips1 = 0
+    skips2 = 0
+    longestSkipstretch1 = 0
+    longestSkipstretch2 = 0
+    mismatchArray = np.empty(16)
+    mismatchArray = np.resize(mismatchArray, [4, 4])
 
-  skipStretch1=0
-  longestSkipStretch1=0
-  skipStretch2=0
-  longestSkipStretch2=0
+    skipStretch1 = 0
+    longestSkipStretch1 = 0
+    skipStretch2 = 0
+    longestSkipStretch2 = 0
 
-  while scoreMatrix[position[0], position[1]] != 0:
-    path = np.row_stack([path,position])
-    options = np.array([scoreMatrix[position[0]-1, position[1]]])
-    options = np.append(options, scoreMatrix[position[0], position[1]-1])
-    options = np.append(options, scoreMatrix[position[0]-1, position[1]-1])
-    
-    ##Which squares could it have come from
-    legal = [False, False, False]
-    if ((options[2]==scoreMatrix[position[0], position[1]]-ms)or(options[2]==scoreMatrix[position[0], position[1]]-mp)):
-        legal[2]=True
-    if (options[1] == scoreMatrix[position[0],position[1]]-gp):
-        legal[1]=True
-    if (options[0] == scoreMatrix[position[0],position[1]]-gp):
-        legal[0]=True
-    
-    #Which is best
-    choices = np.empty(3)
-    for x in range(2):
-        if legal[x]:
-            choices[x]=options[x]
-        else:
-            choices[x]=-1
-    choice = np.argmax(choices)
+    while scoreMatrix[position[0], position[1]] != 0:
+        path = np.row_stack([path, position])
+        options = np.array([scoreMatrix[position[0] - 1, position[1]]])
+        options = np.append(options, scoreMatrix[position[0], position[1] - 1])
+        options = np.append(options, scoreMatrix[position[0] - 1, position[1] - 1])
 
-    ##Record added base
-    if(choice==0):
-        top = data1[position[0]-1] + top
-        bottom = "-" + bottom
-        position = [position[0]-1, position[1]]
-        skips2 = skips2+1
-        skipStretch2 = skipStretch2+1
-    if(choice==1):
-        bottom = data2[position[1]-1] + bottom
-        top = "-" + top
-        position = [position[0], position[1]-1]
-        skips1 = skips1 + 1
-        skipStretch1 = skipStretch1+1
-    if(choice==2):
-        top = data1[position[0]-1] + top
-        bottom = data2[position[1]-1] + bottom
-        position = [position[0]-1, position[1]-1]
-        skipStretch1 = 0
-        skipStretch2 = 0
-        if(data1[position[0]-1]=="A"): k = 0
-        if(data1[position[0]-1]=="C"): k = 1
-        if(data1[position[0]-1]=="G"): k = 2
-        if(data1[position[0]-1]=="T"): k = 3
-        if(data2[position[1]-1]=="A"): l = 0
-        if(data2[position[1]-1]=="C"): l = 1
-        if(data2[position[1]-1]=="G"): l = 2
-        if(data2[position[1]-1]=="T"): l = 3
-        mismatchArray[k,l] = mismatchArray[k,l]+1
+        ##Which squares could it have come from
+        legal = [False, False, False]
+        if ((options[2] == scoreMatrix[position[0], position[1]] - ms) or (
+                options[2] == scoreMatrix[position[0], position[1]] - mp)):
+            legal[2] = True
+        if (options[1] == scoreMatrix[position[0], position[1]] - gp):
+            legal[1] = True
+        if (options[0] == scoreMatrix[position[0], position[1]] - gp):
+            legal[0] = True
 
+        # Which is best
+        choices = np.empty(3)
+        for x in range(2):
+            if legal[x]:
+                choices[x] = options[x]
+            else:
+                choices[x] = -1
+        choice = np.argmax(choices)
 
-    if(skipStretch1>longestSkipStretch1):
-        longestSkipStretch1=skipStretch1
-    if(skipStretch2>longestSkipStretch2):
-        longestSkipStretch2=skipStretch2
-    
-  return_arr = [top, bottom]
-    
-  if (include_matrix):
+        ##Record added base
+        if (choice == 0):
+            top = data1[position[0] - 1] + top
+            bottom = "-" + bottom
+            position = [position[0] - 1, position[1]]
+            skips2 = skips2 + 1
+            skipStretch2 = skipStretch2 + 1
+        if (choice == 1):
+            bottom = data2[position[1] - 1] + bottom
+            top = "-" + top
+            position = [position[0], position[1] - 1]
+            skips1 = skips1 + 1
+            skipStretch1 = skipStretch1 + 1
+        if (choice == 2):
+            top = data1[position[0] - 1] + top
+            bottom = data2[position[1] - 1] + bottom
+            position = [position[0] - 1, position[1] - 1]
+            skipStretch1 = 0
+            skipStretch2 = 0
+            if (data1[position[0] - 1] == "A"): k = 0
+            if (data1[position[0] - 1] == "C"): k = 1
+            if (data1[position[0] - 1] == "G"): k = 2
+            if (data1[position[0] - 1] == "T"): k = 3
+            if (data2[position[1] - 1] == "A"): l = 0
+            if (data2[position[1] - 1] == "C"): l = 1
+            if (data2[position[1] - 1] == "G"): l = 2
+            if (data2[position[1] - 1] == "T"): l = 3
+            mismatchArray[k, l] = mismatchArray[k, l] + 1
+
+        if (skipStretch1 > longestSkipStretch1):
+            longestSkipStretch1 = skipStretch1
+        if (skipStretch2 > longestSkipStretch2):
+            longestSkipStretch2 = skipStretch2
+
+    return_arr = [top, bottom]
+
+    if (include_matrix):
         return_arr.append(scoreMatrix)
 
-
-  if (include_hang):
+    if (include_hang):
         overhang1 = len(data1) - (len(top) - skips1)
         overhang2 = len(data2) - (len(bottom) - skips2)
         fronthang1 = position[0]
@@ -172,133 +171,196 @@ def readSmithWaterman(scoreMatrix, data1, data2, include_matrix=False, include_h
         hang = [overhang1, overhang2, fronthang1, fronthang2, backhang1, backhang2]
         return_arr.append(hang)
 
-  if (include_mismatch):
+    if (include_mismatch):
         return_arr.append(mismatchArray)
 
-  if (include_skip):
+    if (include_skip):
         skip = [longestSkipStretch1, longestSkipStretch2]
         return_arr.append(skip)
 
-  if (include_path):
-      path = np.delete(path,0,0)
-      path = np.flip(path)
-      path = np.flip(path, axis = 1)
-      return_arr.append(path)
+    if (include_path):
+        path = np.delete(path, 0, 0)
+        path = np.flip(path)
+        path = np.flip(path, axis=1)
+        return_arr.append(path)
 
-  if (include_max):
-      return_arr.append(scoreMatrix[start[0],start[1]])
+    if (include_max):
+        return_arr.append(scoreMatrix[start[0], start[1]])
 
-  return return_arr
-
-def makeSmithWaterman(data1, data2, ms, mp, gp, path):
-
-  len1 = len(data1)
-  len2 = len(data2)
-  k = 0
-  pathLength = np.size(path)/2
-  scoreMatrix = np.zeros((len1+1, len2+1))
-  if (pathLength == 0): k=100
-  for i in range(1, len1+1):
-    for j in range(1, len2+1):
-      if ((k<pathLength)and(i==path[k][0])and(j==path[k][1])):
-        scoreMatrix[i,j]=0
-        k+=1
-      else:
-        posibilities = np.array([scoreMatrix[i, j-1]+gp])
-        posibilities = np.append(posibilities, [scoreMatrix[i-1, j]+gp])
-        if data1[i-1] == data2[j-1]:
-            posibilities = np.append(
-            posibilities, [scoreMatrix[i-1][j-1]+ms])
-        else:
-            posibilities = np.append(
-            posibilities, [scoreMatrix[i-1][j-1]+mp])
-        posibilities = np.append(posibilities, [0])
-        scoreMatrix[i, j] = posibilities.max()
-    
+    return return_arr
 
 
-  plt.imshow(scoreMatrix, cmap = "Reds")
-  #plt.colorbar()
+def makeSmithWaterman(data1, data2, ms=2, mp=-3, gp=-3, path=np.empty([1, 2])):
+    len1 = len(data1)
+    len2 = len(data2)
+    k = 0
+    pathLength = np.size(path) / 2
+    scoreMatrix = np.zeros((len1 + 1, len2 + 1))
+    if (pathLength == 0): k = 100
+    for i in range(1, len1 + 1):
+        for j in range(1, len2 + 1):
+            if ((k < pathLength) and (i == path[k][0]) and (j == path[k][1])):
+                scoreMatrix[i, j] = 0
+                k += 1
+            else:
+                posibilities = np.array([scoreMatrix[i, j - 1] + gp])
+                posibilities = np.append(posibilities, [scoreMatrix[i - 1, j] + gp])
+                if data1[i - 1] == data2[j - 1]:
+                    posibilities = np.append(
+                        posibilities, [scoreMatrix[i - 1][j - 1] + ms])
+                else:
+                    posibilities = np.append(
+                        posibilities, [scoreMatrix[i - 1][j - 1] + mp])
+                posibilities = np.append(posibilities, [0])
+                scoreMatrix[i, j] = posibilities.max()
+
+    return scoreMatrix
 
 
-  return scoreMatrix
-
-def smithWatermanRealignment(seq1, seq2, ms=2, mp=-3, gp=-3, include_matrix=False, include_hang=False, include_mismatch=False, include_skip=False, include_path=False, path=np.empty([1,2]), include_max=False):
+def smithWatermanRealignment(seq1, seq2, ms=2, mp=-3, gp=-3, include_matrix=False, include_hang=False,
+                             include_mismatch=False, include_skip=False, include_path=False, path=np.empty([1, 2]),
+                             include_max=False):
     SWSM = makeSmithWaterman(seq1, seq2, ms, mp, gp, path)
-    data = readSmithWaterman(SWSM, seq1, seq2, include_matrix, include_hang, include_mismatch, include_skip, include_path, include_max)
+    data = readSmithWaterman(SWSM, seq1, seq2, ms, mp, gp, include_matrix, include_hang, include_mismatch, include_skip,
+                             include_path, include_max)
     return data
 
+
 def getPaths(seq1, seq2, ms=2, mp=-3, gp=-3):
-  significance = gp*mp*ms * math.log(.05/(len(data1) * len(data2)), .25)
-  #significance = 50
-  newAlignment = np.array([smithWaterman(data1, data2, include_matrix=True, include_hang=True, include_mismatch=True, include_skip=True, include_path=True, include_max=True)])
-  alignments = np.array(newAlignment)
-  paths = newAlignment[0,6]
-  currentMax = newAlignment[0,7]
-  #print(paths)
-  while (currentMax>significance):
-    newAlignment = np.array([smithWaterman(data1, data2, include_matrix=True, include_hang=True, include_mismatch=True, include_skip=True, include_path=True, path=paths, include_max=True)])
-    paths = np.row_stack([paths,newAlignment[0,6]])
-    paths = paths[np.argsort(paths[:,1])]
-    paths = paths[np.argsort(paths[:,0])]
-    paths = np.unique(paths, axis=0)
-    currentMax= newAlignment[0,7]
-    alignments=np.append(alignments, newAlignment)
-    #print(currentMax)
-  return alignments
+    significance = gp * mp * ms * math.log(.05 / (len(seq1) * len(seq2)), .25)
+    print(significance)
+    # significance = 50
+    randStr1 = ''
+    randStr2 = ''
+    bps = ['A', 'C', 'G', 'T']
+    for i in range(len(seq1)):
+        randStr1 = randStr1 + random.choice(bps)
+    for i in range(len(seq2)):
+        randStr2 = randStr2 + random.choice(bps)
+
+    randSamples = makeSmithWaterman(randStr1, randStr2, ms, mp, gp)
+
+    randSamples = randSamples.flatten()
+    randSamples = randSamples[randSamples != 0]
+    significance = np.percentile(randSamples, 90)
+
+
+    significance = significance*math.log(.01 / (len(seq1) * len(seq2)), .25)
+    print(significance)
+
+
+    newAlignment = np.array([smithWatermanRealignment(seq1, seq2, include_matrix=True, include_hang=True,
+                                                      include_mismatch=True, include_skip=True, include_path=True,
+                                                      include_max=True)])
+    alignments = np.array(newAlignment)
+    paths = newAlignment[0, 6]
+    currentMax = newAlignment[0, 7]
+    while (currentMax > significance):
+        newAlignment = np.array([smithWatermanRealignment(seq1, seq2, include_matrix=True, include_hang=True,
+                                                          include_mismatch=True, include_skip=True, include_path=True,
+                                                          path=paths, include_max=True)])
+        paths = np.row_stack([paths, newAlignment[0, 6]])
+        paths = paths[np.argsort(paths[:, 1])]
+        paths = paths[np.argsort(paths[:, 0])]
+        paths = np.unique(paths, axis=0)
+        currentMax = newAlignment[0, 7]
+        alignments = np.append(alignments, newAlignment)
+        # print(currentMax)
+    return alignments
+
 
 def readPaths(alignments):
-  noPaths = int(np.size(alignments)/8)
-  MaxAS=0
-  avgAS=0
-  overhangAvg = [0,0,0,0,0,0]
-  overhangMax = [0,0,0,0,0,0]
-  overhangMin = np.zeros(6)
-  totalAM = np.zeros([4,4])
-  avgSkips = [0,0]
-  maxSkips = [0,0]
-  avgSkipsDif = 0
-  maxSkipsDif = 0
+    noPaths = int(np.size(alignments) / 8)
+    MaxAS = 0
+    avgAS = 0
+    overhangAvg = [0, 0, 0, 0, 0, 0]
+    overhangMax = [0, 0, 0, 0, 0, 0]
+    overhangMin = np.zeros(6)
+    totalAM = np.zeros([4, 4])
+    avgSkips = [0, 0]
+    maxSkips = [0, 0]
+    avgSkipsDif = 0
+    maxSkipsDif = 0
 
-  print(alignments)
+    print(alignments)
 
-  for i in range(0,noPaths):
-    val = alignments[8*i+7]
-    if(val>MaxAS): 
-      MaxAS=val
-    avgAS=avgAS+val
-    print(alignments[8*i])
-    print(alignments[8*i+1])
-    overhangAvg = overhangAvg+alignments[8*i+3]
-    overhangs = alignments[8*i+3]
-    for j in range(6):
-      if (overhangs[j]>overhangMin[j]):
-        overhangMin[j]=overhangs[j]
-      if (overhangs[j]<overhangMax[j]):
-        overhangMax[j]=overhangs[j]
-    totalAM = totalAM+alignments[8*i+4]
-    skipper = alignments[8*i+5]
-    avgSkips = avgSkips + skipper
-    if (maxSkips[0]<skipper[0]): maxSkips[0]=skipper[0]
-    if (maxSkips[0]<skipper[0]): maxSkips[0]=skipper[0]
-    avgSkipsDif = math.fabs(skipper[0]-skipper[1])
-    if (maxSkipsDif<(math.fabs(skipper[0]-skipper[1]))): maxSkipsDif=math.fabs(skipper[0]-skipper[1])
+    for i in range(0, noPaths):
+        val = alignments[8 * i + 7]
+        if (val > MaxAS):
+            MaxAS = val
+        avgAS = avgAS + val
+        overhangAvg = overhangAvg + alignments[8 * i + 3]
+        overhangs = alignments[8 * i + 3]
+        for j in range(6):
+            if (overhangs[j] > overhangMin[j]):
+                overhangMin[j] = overhangs[j]
+            if (overhangs[j] < overhangMax[j]):
+                overhangMax[j] = overhangs[j]
+        totalAM = totalAM + alignments[8 * i + 4]
+        skipper = alignments[8 * i + 5]
+        avgSkips = avgSkips + skipper
+        if (maxSkips[0] < skipper[0]): maxSkips[0] = skipper[0]
+        if (maxSkips[0] < skipper[0]): maxSkips[0] = skipper[0]
+        avgSkipsDif = avgSkipsDif + math.fabs(skipper[0] - skipper[1])
+        if (maxSkipsDif < (math.fabs(skipper[0] - skipper[1]))): maxSkipsDif = math.fabs(skipper[0] - skipper[1])
 
-  avgAS = avgAS/noPaths
-  avgSkips = avgSkips/noPaths
-  avgSkipsDif = avgSkipsDif/noPaths
+    avgAS = avgAS / noPaths
+    temp = overhangAvg.copy()
+    overhangAvg = np.empty(6)
+    for i in range(6):
+        overhangAvg[i] = np.sum(temp[i::6])/noPaths
 
-  returnArray = np.array(noPaths)
-  returnArray = np.append(MaxAS)
-  returnArray = np.append(avgAS)
-  returnArray = np.append(overhangAvg)
-  returnArray = np.append(overhangMax)
-  returnArray = np.append(overhangMin)
-  returnArray = np.append(totalAM)
-  returnArray = np.append(avgSkips)
-  returnArray = np.append(maxSkips)
-  returnArray = np.append(avgSkipsDif)
-  returnArray = np.append(maxSkipsDif)
-  
-  return returnArray
+    avgSkips = np.sum(avgSkips) / noPaths
+    maxSkips = np.sum(maxSkips)
+    avgSkipsDif = avgSkipsDif / noPaths
 
+    returnArray = np.array(noPaths)
+    print(noPaths)
+    print("---")
+    returnArray = np.append(returnArray, MaxAS)
+    print(MaxAS)
+    print("---")
+    returnArray = np.append(returnArray, avgAS)
+    print(avgAS)
+    print("---")
+
+    returnArray = np.append(returnArray, overhangAvg)
+    print(overhangAvg)
+    print("---")
+
+    returnArray = np.append(returnArray, overhangMax)
+    print(overhangMax)
+    print("---")
+
+    returnArray = np.append(returnArray, overhangMin)
+    print(overhangMin)
+    print("---")
+
+    returnArray = np.append(returnArray, totalAM)
+    print(totalAM)
+    print("---")
+
+    returnArray = np.append(returnArray, avgSkips)
+    print(avgSkips)
+    print("---")
+
+    returnArray = np.append(returnArray, maxSkips)
+    print(maxSkips)
+    print("---")
+
+    returnArray = np.append(returnArray, avgSkipsDif)
+    print(avgSkipsDif)
+    print("---")
+
+    returnArray = np.append(returnArray, maxSkipsDif)
+    print(maxSkipsDif)
+
+    return returnArray
+
+data1 = "CTAAAATTCTGAAAGACCTGTTGCTTTTCTCCAGGAAGTTTTACTGGGCATCTCCTGAGCCTAGGCAATAGCTGTAGGGTGACTTCTGGAGCCATCTCCGTTTCCCCGCCCCCCAAAAGAAGCGTAGATTTAACGGGGACGTGCGGCCAGAGCTGGGGAAATGGGCCCGCGAGCCAGGCCGGCGCTTCTCCTCCTGATGCTTTTGCAGACCGCGGTCCTGCAGGGGCGCTTGCTGCGTTCACACTCTCTGCACTACCTCTTCATGGGTGCCTCAGAGCAGGACCTTGGTCTTTCCTTGTTTGAAGCTTTGGGCTACGTGGATGACCAGCTGTTCGTGTTCTATGATCATGAGAGTCGCCGTGTGGAGCCTCGAACTCCATGGGTTTCCAGTAGAATTTCAAGCCAGGTGTGGCTGCAGCTGAGTCAGAGTCTGAAAGGGTGGGATCACATGTTCACTGTTGACTTCTGGACTATTATGGAAAATCACAATCACAGCAAGGAGTCCCACACCCTGCAGGTCATCCTGGGCTGTGAAATGCAAGAAGACAACAGTACCGAGGGCTACTGGAAGTACGGGTACGATGGGCAGGACCACCTTGAATTCTGCCCTGACACGCTGGATTGGAGAGCAGCAGAACCCAGGGCCTGGCCTACCAAGCTGGAGTGGGAAAGGCACAAGATTCGGGCCAGGCAGAACAGGGCCTACCTGGAGAGGGACTGCCCTGCACAGCTGCAGCAGTTGCTGGAGCTGGGGAGAGGTCTTTTGGACCAACAAGTGCCTCCTTTGGTGAAGGTGACACATCATGTGACCTCTTCAGTGACCACTCTACGGTGTCGGGCCTTGAACTACTACCCCCAGAACATCACCATGAAGTGGCTGAAGGATAAGCAGCCAATGGATGCCAAGGAGTTCGAACCTAAAGACGTATTGCCCAATGGGGATGGGACCTACCAGGGCTGGATAACCTTGGCTGTACCCCCTGGGGAAGAGCAGAGATATACGTGCCAGGTGGAGCACCCAGGCCTGGATCAGCCCCTCATTGTGATCTGGGAGCCCTCACCGTCTGGCACCCTAGTCATTGGAGTCATCAGTGGAATTGCTGTTTTTTTCGTAATCTTGTTCATTGGAATTTTGTTCATAATATTAAGGAAGAGGCAGGGTTCAAGAGGAGCCATGGGGCACTACGTCTTAGCTGAACGTGAGTGACACGCAGCCTGCAGACTCATTGTGGGAAGGAGACAAAACTAGAGACTCAAAAAGGGAGTGCATTTATGAGTTCTTCATGTTTCAGGACAGAGTTGAACCTAAACATAGAAATTGCCTGAAGAACTCCCTGA"
+data2 = "ATGGGCTCGAGGAGTAAGGCGACAGGTGATGCCACGGCCTCGACGGTGAAGGCAGAAGAAATCCGGAGCCTGGTTTTGGACTTGAGATTCCAGTTGGTCATCCCCGCGGGTGGTGTCCCGCGGGCAGCTGGGCTAACAAAGCTCGGGGTGTCGTCAGAGTCCCACACGCTGCAAGTGATCCTGGGCTGTGAGGTGCGAGAGGACAACAGCACCAGGGGCTTCTGGAAGTACGGCTATGACGGGCAGAACTACCTTGAATTCCGCCCTGAGACGCTGGACTGGAGGGCTGCAGAGCCCAGGGCCTGGGCCACCAAGCTGGAGTGGGAAGTGAGCGCGATTCGGGCCAAACAGAACAGGGCCTACCTGGAGAGGGACTGTCCCATGCAGCTGCAGAGTTTGCTGGCGCTGGGGACAGGGGTTCTGGACCGGCAAGTGCCTCCCTTGCTGAAGGTGACTCATCATGTGGCCTCTGCAGTGACCACTCTACGGTGTCAGGCTCTGAATTTCTACCCCCAGAACATCACCATGAGGTGGCTGAAGGACAGGCGGCCGCTGGAGGCCAAGGACGTTGAGCCTCAGGACGTGCTGCCCAACGGGGACGGGACCTACCAGGGCTGGTTGGCCGTGGCCGTGCCTCCCGGGGAAGAGCACAGATACACCTGCCTGGTGGAGCACCCGGGGCTAAACCAGCCCCTCGCTGCCACGTGGGAGCCATCGGTGCCCAGCACCCTGGTCATTGGAGCCATCAGTGGGATCGCTGTTTGTGTCATCCTCTTTGTTATTGGTGTTCTGTTCCGAATCTTCAGGAAAAGGCAGGCTTCGAGAGGAGCCATGGGGGACTACGTGTTGGCCGAATGTGAGTGA"
+
+
+ali = getPaths(data1, data2)
+print(ali)
+number, maxAS, avgAS, avgOHt1, avgOHf1,  avgOHb1, avgOHt3, avgOHf2,  avgOHb2, minOHt1, minOHf1, minOHb1, minOHt2, minOHf2, minOHb2, maxOHt1, maxOHf1,  maxOHb1, maxOHt3, maxOHf2,  maxOHb2, amTotalAA, amTotalAC, amTotalAG, amTotalAT, amTotalCA, amTotalCC, amTotalCG, amTotalCT,  amTotalGA, amTotalGC, amTotalGG, amTotalGT,  amTotalTA, amTotalTC, amTotalTG, amTotalTT, avgSkips, maxSkips, avgSD, maxSD  = readPaths(ali)
