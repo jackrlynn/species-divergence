@@ -6,10 +6,9 @@ def k1Complexity(sequence):
     window = len(sequence)
     CV = nucleoFreq(sequence)
     k1 = 0
-
-    k1 += (1 / window) * (math.log(math.factorial(window) // (
-                math.factorial(CV[0]) * math.factorial(CV[1]) * math.factorial(CV[2]) * math.factorial(CV[3])), 4))
-
+    for i in range(len(CV)):
+        CV[i] = int(CV[i] * len(sequence))
+    k1 += (1 / window) * (math.log(math.factorial(window) // (math.factorial(CV[0]) * math.factorial(CV[1]) * math.factorial(CV[2]) * math.factorial(CV[3])), 4))
     return k1
 
 
