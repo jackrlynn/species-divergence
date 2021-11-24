@@ -44,7 +44,7 @@ def getRow(seq1, seq2):
     print("LANDMARK #5: COMPLEXITY COMPLETE")
 
     ali = al.getPaths(seq1, seq2, 2, -1, -2)
-    number, maxAS, avgAS, avgOHt1, avgOHf1,  avgOHb1, avgOHt3, avgOHf2,  avgOHb2, minOHt1, minOHf1, minOHb1, minOHt2, minOHf2, minOHb2, maxOHt1, maxOHf1,  maxOHb1, maxOHt3, maxOHf2,  maxOHb2, amTotalAA, amTotalAC, amTotalAG, amTotalAT, amTotalCA, amTotalCC, amTotalCG, amTotalCT,  amTotalGA, amTotalGC, amTotalGG, amTotalGT,  amTotalTA, amTotalTC, amTotalTG, amTotalTT, avgSkips, maxSkips, avgSD, maxSD  = readPaths(ali)
+    number, maxAS, avgAS, avgOHt1, avgOHf1,  avgOHb1, avgOHt3, avgOHf2,  avgOHb2, minOHt1, minOHf1, minOHb1, minOHt2, minOHf2, minOHb2, maxOHt1, maxOHf1,  maxOHb1, maxOHt3, maxOHf2,  maxOHb2, amTotalAA, amTotalAC, amTotalAG, amTotalAT, amTotalCA, amTotalCC, amTotalCG, amTotalCT,  amTotalGA, amTotalGC, amTotalGG, amTotalGT,  amTotalTA, amTotalTC, amTotalTG, amTotalTT, avgSkips, maxSkips, avgSD, maxSD  = al.readPaths(ali)
 
     return flatten([hang, mismatch, skip, kmers, nfreqs, complex, number, maxAS, avgAS, avgOHt1, avgOHf1,  avgOHb1, avgOHt3, avgOHf2,  avgOHb2, minOHt1, minOHf1, minOHb1, minOHt2, minOHf2, minOHb2, maxOHt1, maxOHf1,  maxOHb1, maxOHt3, maxOHf2,  maxOHb2, amTotalAA, amTotalAC, amTotalAG, amTotalAT, amTotalCA, amTotalCC, amTotalCG, amTotalCT,  amTotalGA, amTotalGC, amTotalGG, amTotalGT,  amTotalTA, amTotalTC, amTotalTG, amTotalTT, avgSkips, maxSkips, avgSD, maxSD])
 
